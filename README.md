@@ -1,0 +1,2 @@
+# ScalpiLang
+new epic lang :)
