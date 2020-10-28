@@ -1,0 +1,7 @@
+﻿val i1 6 + 3
+
+fn start
+  8 => i1
+  return 'i1 + 'i2
+  
+  val i2 23+6

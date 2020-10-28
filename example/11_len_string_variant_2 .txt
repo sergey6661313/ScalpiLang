@@ -1,0 +1,18 @@
+﻿var hw "hello world" 0
+
+# функция вычесляющяя длину строки
+fn str_len
+  param start_str
+  var   end_str    'start_str
+
+  # в цикле перебираем символы строки пока не дойдём до символа обозначаемого 0
+  loop
+    var symbol 0
+
+    [u8]'end_str => symbol         # получаем символ из строки 
+    if [u8]'symbol = 0             # если ноль
+      return 'end_str - 'start_str # тогда возвращяем длинну
+    'end_str + 8 => end_str	   # иначе инкрементируем длинну
+
+fn start
+  return hw, -> str_len

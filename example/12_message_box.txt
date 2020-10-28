@@ -1,0 +1,8 @@
+﻿import User32
+  fn MessageBoxA
+
+fn start
+  return 0, title, message, 0 ~> 'User32\MessageBoxA
+
+  val title   "Alert!" 0
+  val message "hello world!" 0

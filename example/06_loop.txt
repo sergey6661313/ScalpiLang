@@ -1,0 +1,11 @@
+﻿fn get_factorial
+  param max
+  var factorial 1
+
+  loop number 0 to 'max
+    'factorial * 'number => factorial
+
+  return 'factorial
+
+fn start
+  return 7, -> get_factorial
