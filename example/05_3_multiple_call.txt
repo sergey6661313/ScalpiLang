@@ -1,0 +1,19 @@
+fn func_1
+  param l1
+  param l2
+  return 'l1 * 'l2
+
+fn func_2
+  param l1
+  param l2
+  return 'l1 * 'l2
+
+fn func_3
+  param l1
+  param l2
+  return 'l1 * 'l2
+
+fn start
+  return -> func_3
+    1, 4, -> func_1,
+    2, 5, -> func_2,
