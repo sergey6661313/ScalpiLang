@@ -1,8 +1,0 @@
-﻿fn multiplecate
-  param first_arg
-  param second_arg
-
-  return 'first_arg * 'second_arg
-
-fn start
-  6, 7, -> multiplecate
