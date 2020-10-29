@@ -14,11 +14,11 @@ fn func_3
   return 'l1 * 'l2
 
 fn start
-  !func_3
-    !func_1
+  call func_3
+    call func_1
       1
       4
-    !func_2
+    call func_2
       2
       5
 

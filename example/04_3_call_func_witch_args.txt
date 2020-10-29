@@ -5,6 +5,6 @@
   return 'first_arg * 'second_arg
 
 fn start 
-  ! multiplecate
+  call multiplecate
     6
     7
