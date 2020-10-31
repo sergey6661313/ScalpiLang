@@ -1,2 +1,5 @@
 fn start
-  return 0
+  return 0 
+
+# fn     - обозначение функции
+# return - выход из функции

@@ -14,8 +14,8 @@ fn func_3
   return 'l1 * 'l2
 
 fn start
-  call func_3
-    1, 4, -> func_1
-    2, 5, -> func_2
+  -> func_3
+    1, 4, -> func_1,
+    2, 5, -> func_2,
   
   return 

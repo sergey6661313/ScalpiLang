@@ -5,6 +5,8 @@
   return 'first_arg * 'second_arg
 
 fn start 
-  call multiplecate
-    6
-    7
+  -> multiplecate
+    6,
+    7,
+
+# для выражений строчки с большим отступом так же имеют больший приоритет.

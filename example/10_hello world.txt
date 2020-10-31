@@ -4,4 +4,4 @@
 val hw "hello world" 0
 
 fn start
-  hw ~> 'msvcrt\printf
+  hw -> 'msvcrt\printf
