@@ -1,5 +1,7 @@
 ;# ScalpiLang (31.10.2020)
 
+
+
 ;fn start
   label start
     namespace .
@@ -8,13 +10,20 @@
   ;var resault
     resault equ local_1
 
-  ;TODO -> Ð§Ñ‚ÐµÐ½Ð¸Ðµ Ð°Ñ€Ð³ÑƒÐ¼ÐµÐ½Ñ‚Ð¾Ð² ÐºÐ¾Ð¼Ð°Ð½Ð´Ð½Ð¾Ð¹ ÑÑ‚Ñ€Ð¾ÐºÐ¸ => resault
-  ;TODO -> Ñ‡Ñ‚ÐµÐ½Ð¸Ðµ Ð¸ÑÑ…Ð¾Ð´Ð½Ð¸ÐºÐ°  => resault
-  ;TODO -> ÐºÐ¾Ð¼Ð¿Ð¸Ð»ÑÑ†Ð¸Ñ  => resault
-  ;TODO -> ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ ÑÐºÐ¾Ð¼Ð¿Ð¸Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ñ… Ñ„Ð°Ð¸Ð»Ð¾Ð²  => resault
+  ;-> ¯®«ãç¨âì_¨¬ï_¨áå®¤­¨ª    => resault
+    call ¯®«ãç¨âì_¨¬ï_¨áå®¤­¨ª 
+    mov [resault], rax
+  
+  ;TODO -> çâ¥­¨¥ ¨áå®¤­¨ª          => resault
+  
+  
+  ;TODO -> ª®¬¯¨«ïæ¨ï               => resault
+  
+  
+  ;TODO -> á®åà ­¥­¨âì              => resault
 
-  ;my_debug_text, 'resault -> 'msvcrt\printf
-    lea rcx, [my_debug_text]
+  ;debug_text, 'resault -> 'msvcrt\printf
+    lea rcx, [debug_text]
     mov rdx, rax
     call [msvcrt.printf]
 
@@ -22,8 +31,8 @@
     call PrintLastError
     jmp _ret
 
-  ;val my_debug_text "programm finish with %u" 10 13 0
-    label my_debug_text
+  ;val debug_text "programm finish with %u" 10 13 0
+    label debug_text
       db "programm finish with %u", 10, 13, 0
   
   label _ret
@@ -74,3 +83,121 @@
         db 10, 13, "last error: %u", 10, 13, 0    
 
   end namespace
+
+
+
+;fn ¯®«ãç¨âì_¨¬ï_¨áå®¤­¨ª 
+  label ¯®«ãç¨âì_¨¬ï_¨áå®¤­¨ª 
+    namespace .
+    SUB RSP, to_link_ret
+
+  ;¨¬ï_¨áå®¤­¨ª _¨§_ à£ã¬¥­â®¢_ª®¬ ­¤­®©_áâà®ª¨, input_file_name, -> copy_symbols
+    lea rcx, [¨¬ï_¨áå®¤­¨ª _¨§_ à£ã¬¥­â®¢_ª®¬ ­¤­®©_áâà®ª¨]
+    lea rdx, [input_file_name]
+    call copy_symbols
+  
+  ;debug_text, input_file_name, -> 'msvcrt\printf
+    lea rcx, [debug_text]
+    lea rdx, [input_file_name]
+    call [msvcrt.printf]
+
+  ;return 1
+    mov rax, 1
+    jmp _ret
+
+  ;val debug_text "¯®«ãç¨âì_¨¬ï_¨áå®¤­¨ª : input_file_name = %s" 10 13 0
+    label debug_text
+      db "¯®«ãç¨âì_¨¬ï_¨áå®¤­¨ª : input_file_name = %s", 10, 13, 0
+
+  ;val ¨¬ï_¨áå®¤­¨ª _¨§_ à£ã¬¥­â®¢_ª®¬ ­¤­®©_áâà®ª¨ "examples\12_message_box.txt" 0
+    label ¨¬ï_¨áå®¤­¨ª _¨§_ à£ã¬¥­â®¢_ª®¬ ­¤­®©_áâà®ª¨ 
+      db "examples\12_message_box.txt", 0
+
+  label _ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn copy_symbols
+  label copy_symbols
+    namespace .
+    SUB RSP, to_link_ret
+    mov [param_1], RCX
+    mov [param_2], RDX
+    
+  ;param from
+   from equ param_1
+
+  ;param dest
+    dest equ param_2
+
+  ;[u8] var symbol
+    symbol equ local_1
+
+  ;var pos 0
+    pos equ local_2
+    mov rax, 0
+    mov [pos], rax
+  
+  ;loop       # for symbol in from: [u8]'symbol => 'dest + 'i
+    label loop_1
+      namespace .
+      label _continue
+    
+    ;[u8] '('from + 'pos) => symbol
+        mov rax,  [from]
+        add rax,  [pos]
+        mov ah,   [rax]
+        mov [symbol], ah
+
+    ;[u8]'symbol => 'dest + 'pos
+      mov ah, [symbol]
+      mov rcx,   [dest]
+      add rcx,   [pos]
+      mov [rcx], ah
+
+    ;debug_text, 'symbol -> 'msvcrt\printf
+      lea rcx, [debug_text]
+      mov rdx, [symbol] 
+      call [msvcrt.printf]
+
+    ;if 'symbol = 0
+      label _if_1
+        namespace .
+        mov ah, [symbol]
+        cmp ah, 0
+        je _body
+        jmp end_if
+        label _body
+
+      ;break
+        jmp _break
+
+      label end_if
+        end namespace
+
+    ;'pos + 1 => pos
+        mov rax, [pos]
+        add rax, 1
+        mov [pos], rax
+    
+    jmp _continue
+      label _break
+      end namespace
+
+  ;return 1
+    mov rax, 1
+    jmp _ret
+
+  jmp _ret
+
+  ;val debug_text "copy_symbols: symbol = %c" 10 13 0
+    label debug_text
+      db "copy_symbols: symbol = %c", 10, 13, 0
+
+  label _ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace  
