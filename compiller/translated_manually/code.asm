@@ -10,17 +10,17 @@
   ;var resault
     resault equ local_1
 
-  ;-> получить_имя_исходника   => resault
-    call получить_имя_исходника
+  ;-> get_input_file_name   => resault
+    call get_input_file_name
     mov [resault], rax
   
-  ;TODO -> чтение исходника         => resault
+  ;TODO -> ╤З╤В╨╡╨╜╨╕╨╡ ╨╕╤Б╤Е╨╛╨┤╨╜╨╕╨║╨░         => resault
   
   
-  ;TODO -> компиляция               => resault
+  ;TODO -> ╨║╨╛╨╝╨┐╨╕╨╗╤П╤Ж╨╕╤П               => resault
   
   
-  ;TODO -> сохраненить              => resault
+  ;TODO -> ╤Б╨╛╤Е╤А╨░╨╜╨╡╨╜╨╕╤В╤М              => resault
 
   ;debug_text, 'resault -> 'msvcrt\printf
     lea rcx, [debug_text]
@@ -86,13 +86,13 @@
 
 
 
-;fn получить_имя_исходника
-  label получить_имя_исходника
+;fn get_input_file_name
+  label get_input_file_name
     namespace .
     SUB RSP, to_link_ret
 
-  ;имя_исходника_из_аргументов_командной_строки, input_file_name, -> copy_symbols
-    lea rcx, [имя_исходника_из_аргументов_командной_строки]
+  ;default_input_file_name, input_file_name, -> copy_symbols
+    lea rcx, [default_input_file_name]
     lea rdx, [input_file_name]
     call copy_symbols
   
@@ -105,12 +105,12 @@
     mov rax, 1
     jmp _ret
 
-  ;val debug_text "получить_имя_исходника: input_file_name = %s" 10 13 0
+  ;val debug_text "get_input_file_name: input_file_name = %s" 10 13 0
     label debug_text
-      db "получить_имя_исходника: input_file_name = %s", 10, 13, 0
+      db "get_input_file_name: input_file_name = %s", 10, 13, 0
 
-  ;val имя_исходника_из_аргументов_командной_строки "examples\12_message_box.txt" 0
-    label имя_исходника_из_аргументов_командной_строки 
+  ;val default_input_file_name "examples\12_message_box.txt" 0
+    label default_input_file_name 
       db "examples\12_message_box.txt", 0
 
   label _ret
