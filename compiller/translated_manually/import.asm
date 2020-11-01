@@ -23,14 +23,17 @@
     CreateFileA     dq RVA CreateFileA_name
     GetLastError    dq RVA GetLastError_name
     ReadFileEx      dq RVA ReadFileEx_name
+    GetCommandLineA dq RVA GetCommandLineA_name
     dq 0
     name            db 'Kernel32.dll',0
 
     ;fn CreateFileA 
-      CreateFileA_name     db 0, 0, 'CreateFileA', 0
+      CreateFileA_name      db 0, 0, 'CreateFileA', 0
     ;GetLastError
       GetLastError_name     db 0, 0, 'GetLastError', 0
     ;fn ReadFileEx
-      ReadFileEx_name         db 0, 0, "ReadFileEx", 0
+      ReadFileEx_name       db 0, 0, "ReadFileEx", 0
     end namespace
+    ;fn GetCommandLineA 
+      GetCommandLineA_name  db 0, 0, "GetCommandLineA", 0
 
