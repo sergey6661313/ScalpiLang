@@ -1,5 +1,15 @@
-;# ScalpiLang (31.10.2020)
-;TODO slice_copy_symbols_to_text
+;# ScalpiLang (02.11.2020)
+;TODO чтение исходника
+
+;def t_slice
+  ;def start
+    _t_slice•_start = 0
+  
+  ;def end
+    _t_slice•_end   = 8
+  
+  _t_slice•__size = 16
+
 
 
 ;fn start
@@ -8,11 +18,11 @@
     SUB RSP, to_link_ret
 
   ;var resault
-    resault equ local_1
+    _resault equ local_1
 
   ;-> get_input_file_name           => resault
-    call get_input_file_name
-    mov [resault], rax
+    call _get_input_file_name
+    mov [_resault], rax
   
   ;TODO -> чтение исходника         => resault
   
@@ -23,19 +33,19 @@
   ;TODO -> сохранить                => resault
 
   ;debug_text, 'resault -> 'msvcrt\printf
-    lea rcx, [debug_text]
+    lea rcx, [_debug_text]
     mov rdx, rax
-    call [msvcrt.printf]
+    call [_msvcrt•_printf]
 
   ;return -> PrintLastError 
-    call PrintLastError
-    jmp _ret
+    call _PrintLastError
+    jmp __ret
 
   ;val debug_text "programm finish with %u" 10 13 0
-    label debug_text
+    label _debug_text
       db "programm finish with %u", 10, 13, 0
   
-  label _ret
+  label __ret
     ADD RSP, to_link_ret
     ret
     end namespace
@@ -43,7 +53,7 @@
 
 
 ;fn PrintLastError
-  label PrintLastError
+  label _PrintLastError
     namespace .
     SUB RSP, to_link_ret
 
@@ -52,7 +62,7 @@
 
   ;~> 'Kernel32\GetLastError => last_error
     ;~> 'Kernel32\GetLastError 
-      call [Kernel32.GetLastError]
+      call [_Kernel32•_GetLastError]
       
     ;=> last_error
       mov [last_error], rax
@@ -69,12 +79,12 @@
     ;~> 'msvcrt\printf
         mov rcx, [argument_1]
         mov rdx, [argument_2]
-        call [msvcrt.printf]
+        call [_msvcrt•_printf]
 
   ;return 1
     mov rax, [last_error]
 
-  label _ret
+  label __ret
     add RSP, to_link_ret
     ret
 
@@ -87,74 +97,76 @@
 
 
 ;fn get_input_file_name
-  label get_input_file_name
+  label _get_input_file_name
     namespace .
     SUB RSP, to_link_ret
 
   ;var p_command_line
-    p_command_line equ  local_1
+    _p_command_line equ  local_1
   
   ;var resault
-    resault equ local_2
+    _resault equ local_2
 
+  ;# пробуем получить имя фаила из коммандной строки
   ;-> 'Kernel32\GetCommandLineA => p_command_line
-    call [Kernel32.GetCommandLineA]
-    mov [p_command_line], rax
+    call [_Kernel32•_GetCommandLineA]
+    mov [_p_command_line], rax
   
   ;'p_command_line, text_command_line, -> copy_symbols
-    mov rcx, [p_command_line]
-    lea rdx, [text_command_line]
-    call copy_symbols
+    mov rcx, [_p_command_line]
+    lea rdx, [_text_command_line]
+    call _copy_symbols
   
   ;debug_text2, text_command_line, -> 'msvcrt\printf
-    lea rcx, [debug_text2]
-    mov rdx, [p_command_line] 
-    call [msvcrt.printf]
+    lea rcx, [_debug_text2]
+    mov rdx, [_p_command_line] 
+    call [_msvcrt•_printf]
 
   ;text_command_line -> parse_find_input_name => resault
-    lea rcx, [text_command_line] 
-    call parse_find_input_name 
-    mov [resault], rax
+    lea rcx, [_text_command_line] 
+    call _parse_find_input_name 
+    mov [_resault], rax
   
+  ;# Если не получилось до берём им по умолчанию
   ;if 'resault != 1 #copy default symbols
-    label _if_1
-    namespace .
-    mov rax, [resault]
-    cmp rax, 1
-    jne _body
-    jmp _end_if
-    label _body  
+    label __if_1
+      namespace .
+      mov rax, [_resault]
+      cmp rax, 1
+      jne __body
+      jmp __end_if
+      label __body  
   
     ;default_input_file_name, input_file_name, -> copy_symbols
-      lea rcx, [default_input_file_name]
-      lea rdx, [text_input_file_name]
-      call copy_symbols
+      lea rcx, [_default_input_file_name]
+      lea rdx, [_text_input_file_name]
+      call _copy_symbols
 
-    label _end_if
+    label __end_if
       end namespace
 
   ;debug_text, input_file_name, -> 'msvcrt\printf
-    lea rcx, [debug_text]
-    lea rdx, [text_input_file_name]
-    call [msvcrt.printf]
+    lea rcx, [_debug_text]
+    lea rdx, [_text_input_file_name]
+    call [_msvcrt•_printf]
 
   ;return 1
     mov rax, 1
-    jmp _ret
+    jmp __ret
 
   ;val debug_text "get_input_file_name: input_file_name = %s" 10 13 0
-    label debug_text
+    label _debug_text
       db "get_input_file_name: input_file_name = %s", 10, 13, 0
 
   ;val debug_text2 "get_input_file_name: command_line = %s" 10 13 0
-    label debug_text2 
+    label _debug_text2 
       db "get_input_file_name: command_line = %s", 10, 13, 0
   
   ;val default_input_file_name "examples\12_message_box.txt" 0
-    label default_input_file_name 
+    label _default_input_file_name 
       db "examples\12_message_box.txt", 0
 
-  label _ret
+  label __ret
     ADD RSP, to_link_ret
     ret
     end namespace
@@ -162,7 +174,7 @@
 
 
 ;fn copy_symbols
-  label copy_symbols
+  label _copy_symbols
     namespace .
     SUB RSP, to_link_ret
     mov [param_1], RCX
@@ -182,10 +194,10 @@
     mov rax, 0
     mov [pos], rax
   
-  ;loop       # for symbol in from: [u8]'symbol => 'dest + 'i
+  ;loop       # копируем символы
     label loop_1
       namespace .
-      label _continue
+      label __continue
     
     ;[u8] '('from + 'pos) => symbol
         mov rax,      [from]
@@ -204,21 +216,21 @@
       mov rdx, [symbol]
       xor r8,  r8
       mov r8l, dl
-      ;call [msvcrt.printf]
+      ;call [_msvcrt•_printf]
 
     ;if [u8]'symbol = 0
-      label _if_1
+      label __if_1
         namespace .
         mov al,   [symbol]
         cmp al,   0
-        je _body
-        jmp end_if
-        label _body
+        je __body
+        jmp __end_if
+        label __body
 
       ;break
-        jmp _break
+        jmp __break
 
-      label end_if
+      label __end_if
         end namespace
 
     ;'pos + 1 => pos
@@ -226,21 +238,21 @@
         add rax, 1
         mov [pos], rax
     
-    jmp _continue
-      label _break
+    jmp __continue
+      label __break
       end namespace
 
   ;return 1
     mov rax, 1
-    jmp _ret
+    jmp __ret
 
-  jmp _ret
+  jmp __ret
 
   ;val debug_text "copy_symbols: symbol = %c, %u" 10 13 0
     label debug_text
       db "copy_symbols: symbol = %c, %u", 10, 13, 0
 
-  label _ret
+  label __ret
     ADD RSP, to_link_ret
     ret
     end namespace
@@ -248,7 +260,7 @@
 
 
 ;fn parse_find_input_name
-  label parse_find_input_name
+  label _parse_find_input_name
     namespace .
     SUB RSP, to_link_ret
     
@@ -261,207 +273,348 @@
     p_command_line equ param_1
 
   ;# вычесляем положение первого аргумента
+  ;[t_slice] var slice 
+    _slice        equ local_1
+    _slice•_start equ local_1
+    _slice•_end   equ local_2
 
-  ;var slice 
-    slice equ local_1
-    
-    ;var start 'p_command_line
-      slice.start equ local_1
-      mov rax, [p_command_line]
-      mov [slice.start], rax
-    
-    ;var end
-      slice.end equ local_2
-
-  ;# пропускаем слева имя exe
-      ;# то и заканчивается кавычками.
-      ;# тогда first_argument будет сразу после пробела за ними
-    ;# иначе 
-      ;# тогда first_argument будет сразу после первого встречного пробела
+  ;'p_command_line => slice\start 
+    mov rax, [p_command_line]
+    mov [_slice•_start], rax
 
   ;# проверяем "имя exe начинаетя на кавычки" ?
-
   ;var symbol
-    symbol equ local_3
+    _symbol equ local_3
   
   ;[u8]''slice\start => symbol
-    mov rax,      [slice.start]
+    mov rax,      [_slice•_start]
     mov al,       [rax]
-    mov [symbol], al
+    mov [_symbol], al
 
   ;if [u8]'symbol = 34 
-    label _if_1
+    label __if_1
       namespace .
-      mov al,   [symbol]
+      mov al,   [_symbol]
       cmp al,   34
-      je _body
-      jmp _else
-      label _body
+      je __body
+      jmp __else
+      label __body
 
     ;'slice\start + 1 => slice\start
-      mov rax, [slice.start]
+      mov rax, [_slice•_start]
       add rax, 1
-      mov [slice.start], rax
+      mov [_slice•_start], rax
     
     ;loop
       label loop_1
       namespace .
-      label _continue
+      label __continue
       
-      ;[u8]''slice.start => symbol
-        mov rax,      [slice.start]
+      ;[u8]''slice\start => symbol
+        mov rax,      [_slice•_start]
         mov al,       [rax]
-        mov [symbol], al
+        mov [_symbol], al
       
       ;if [u8]'symbol = 34 # двойные кавычки
-        label _if_2
+        label __if_2
           namespace .
-          mov al,   [symbol]
+          mov al,   [_symbol]
           cmp al,   34
-          je _body
-          jmp _end_if
-          label _body
+          je __body
+          jmp __end_if
+          label __body
         
         ;break
-          jmp _break
+          jmp __break
         
-        label _end_if
+        label __end_if
           end namespace
 
       ;'slice.start + 1 => slice.start
-        mov rax, [slice.start]
+        mov rax, [_slice•_start]
         add rax, 1 
-        mov [slice.start], rax
+        mov [_slice•_start], rax
       
-      jmp _continue
-      label _break
+      jmp __continue
+      label __break
         end namespace
     
-    ;'slice.start + 1 => slice.start
-      mov rax, [slice.start]
+    ;'slice\start + 1 => slice\start
+      mov rax, [_slice•_start]
       add rax, 1
-      mov [slice.start], rax
+      mov [_slice•_start], rax
     
-    jmp _end_if
+    jmp __end_if
   
   ;else # значит начало аргумента после двух пробелов
-    label _else
+    label __else
 
     ;loop # ищим начало
       label loop_2
         namespace .
-        label _continue
+        label __continue
 
       ;[u8]''slice.start => symbol
-        mov rax,      [slice.start]
+        mov rax,      [_slice•_start]
         mov al,       [rax]
-        mov [symbol], al
+        mov [_symbol], al
 
-      ;if [u8]'symbol = " "
-        label _if_2
+      ;if [u8]'symbol = 0
+        label __if_3
           namespace .
-          mov al,   [symbol]
-          cmp al,   " "
-          je _body
-          jmp _end_if
-          label _body
+          mov al,   [_symbol]
+          cmp al,   0
+          je __body
+          jmp __end_if
+          label __body
         
-        ;'slice.start + 2 => slice.start
-          mov rax, [slice.start]
-          add rax, 2
-          mov [slice.start], rax
-      
-        ;break
-          jmp _break
+        ;return 3
+          mov rax, 3
+          jmp __ret
 
-        label _end_if
+        label __end_if
           end namespace
 
-      ;'slice.start + 1 => slice.start
-        mov rax, [slice.start]
+      ;if [u8]'symbol = " "
+        label __if_2
+          namespace .
+          mov al,   [_symbol]
+          cmp al,   " "
+          je __body
+          jmp __end_if
+          label __body
+        
+        ;'slice.start + 2 => slice.start
+          mov rax, [_slice•_start]
+          add rax, 2
+          mov [_slice•_start], rax
+
+      ;[u8]''slice.start => symbol
+        mov rax,      [_slice•_start]
+        mov al,       [rax]
+        mov [_symbol], al
+
+      ;if [u8]'symbol = 0 
+        label __if_4
+          namespace .
+          mov al,   [_symbol]
+          cmp al,   0
+          je __body
+          jmp __end_if
+          label __body
+        
+        ;return 4
+          mov rax, 4
+          jmp __ret
+
+        label __end_if
+          end namespace
+
+        ;break
+          jmp __break
+
+        label __end_if
+          end namespace
+
+      ;'slice\start + 1 => slice\start
+        mov rax, [_slice•_start]
         add rax, 1
-        mov [slice.start], rax
+        mov [_slice•_start], rax
       
-      jmp _continue
-        label _break
+      jmp __continue
+        label __break
         end namespace
 
-    label _end_if
+    label __end_if
       end namespace
 
   ;# ищим конец первого аргумента
-  ;'slice\start + 1 => slice\end
-    mov rax, [slice.start]
-    add rax, 1
-    mov [slice.end], rax
+  ;'slice\start => slice\end
+    mov rax, [_slice•_start]
+    mov [_slice•_end], rax
 
-  ;loop # увеличиваем slice\end пока не встретим конец аргумента
+  ;# увеличиваем slice\end пока не встретим конец аргумента
+  ;loop 
     label loop_3
       namespace .
-      label _continue
+      label __continue
 
-    ;match ''slice\end
-      label _match_1
+    ;var next_symbol
+      _next_symbol equ local_4
+    
+    ;'('slice\end + 1) => next_symbol
+      mov rax, [_slice•_end]
+      add rax, 1
+      mov rax, [rax]
+      mov [_next_symbol], rax
+
+    ;match 'next_symbol
+      label __match_1
         namespace .
-        mov rax, [slice.end]
+        mov rax, [_slice•_end]
+        add rax, 1
         mov rax, [rax]
         cmp rax, " "
-          je _body_1
+          je __body_1
         cmp rax, 0
-          je _body_2
-        jmp _end_match
+          je __body_2
+        jmp __end_match
         
       ;" "  
-        label _body_1
+        label __body_1
         
         ;break
-          jmp _break
+          jmp __break
       
       ;0
-        label _body_2
+        label __body_2
         
         ;break
-          jmp _break
+          jmp __break
 
-      label _end_match
+      label __end_match
         end namespace
   
     ;'slice\end + 1 => slice\end
-      mov rax, [slice.end] 
+      mov rax, [_slice•_end] 
       add rax, 1
-      mov [slice.end], rax
-    
-    jmp _continue
-      label _break
+      mov [_slice•_end], rax
+
+    jmp __continue
+      label __break
       end namespace
 
-  ;#TODO slice, text_input_file_name, -> slice_copy_symbols_to_text
-    mov rcx, debug_1
-    call [msvcrt.printf]
-    jmp _end_debug
-    label debug_1
-    db "parse_find_input_name: TODO slice_copy_symbols_to_text", 10, 13, 0
-    label _end_debug
-    mov rax, 3
-    jmp _ret
+  ;var resault
+    _resault equ local_4
+
+  ;slice, text_input_file_name, -> slice_copy_symbols_to_text => resault
+    lea rcx, [_slice]
+    lea rdx, [_text_input_file_name]
+    call _slice_copy_symbols_to_text
+    mov [_resault], rax
+  
+  ;if 'resault != 1 :break
+    mov rax, [_resault]
+    cmp rax, 1
+    jne __ret
 
   ;var slice_size 'slice\start - 'slice\end
-    slice_size equ local_4
-    mov rax, [slice.start]
-    sub rax, [slice.end]
-    mov [slice_size], rax
+    _slice_size equ local_4
+    mov rax, [_slice•_start]
+    sub rax, [_slice•_end]
+    mov [_slice_size], rax
 
   ;0 => text_input_file_name + 'slice_size
     mov rax,    0
-    lea rcx,    [text_input_file_name]
-    add rcx,    [slice_size]
+    lea rcx,    [_text_input_file_name]
+    add rcx,    [_slice_size]
     mov [rcx],  rax
 
   ;return 1
     mov rax, 1
-    jmp _ret
+    jmp __ret
 
-  label _ret
+  label __ret
     ADD RSP, to_link_ret
     ret
     end namespace
+
+
+
+;fn slice_copy_symbols_to_text
+  label _slice_copy_symbols_to_text
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;param p_slice
+    _p_slice equ param_1
+  
+  ;param p_buffer
+    _p_buffer equ param_2
+  
+  ;var start '('p_slice + t_slice\start)
+    _start equ local_1
+    ;'('p_slice + t_slice\start) => start
+      mov rax, [_p_slice]
+      mov rax, [rax]
+      mov [_start], rax
+    
+  ;var end   '('p_slice + t_slice\end)
+    _end equ local_2
+    ;'('p_slice + t_slice\end) => end
+        mov rax, [_p_slice]
+        add rax, _t_slice•_end
+        mov rax, [rax]
+        mov [_end], rax
+  
+  ;var address_in 'start
+    _address_in equ local_3
+    mov rax, [_start]
+    mov [_address_in], rax
+  
+  ;var addres_out 'p_buffer
+    _addres_out equ local_4 
+    mov rax, [_p_buffer]
+    mov [_addres_out], rax
+
+  ;# последовательно копируем символ за символом
+  ;loop
+    label loop_1
+      namespace .
+      label __continue
+
+    ;''address_in => 'addres_out
+      mov rax, [_address_in]
+      mov rax, [rax]
+      mov rcx, [_addres_out]
+      mov [rcx], rax
+    
+    ;'address_in + 1 => address_in
+      mov rax, [_address_in]
+      add rax, 1
+      mov [_address_in], rax
+    
+    ;'addres_out + 1 => addres_out
+      mov rax, [_addres_out]
+      add rax, 1
+      mov [_addres_out], rax
+
+    ;if 'address_in = 'end
+      label __if_1 
+        namespace .
+        mov rax, [_address_in]
+        mov rcx, [_end]
+        cmp rax, rcx
+        je __body
+        jmp __end_if
+        label __body
+
+      ;break
+        jmp __break
+      
+      label __end_if
+        end namespace
+    
+    jmp __continue
+      label __break
+      end namespace
+
+  ;return 1
+    mov rax, 1
+    jmp __ret
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+
+
+

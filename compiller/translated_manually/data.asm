@@ -1,15 +1,15 @@
 ;31.10.2020
 
-;val NULL _NULL
-  label NULL 
-    dq _NULL
+;val NULL real_NULL
+  label _NULL 
+    dq _real_NULL
 
-;val _NULL 0
-  label _NULL
+;val real_NULL 0
+  label _real_NULL
     dq 0
   
 ;val change_background_to_black 27 "[40m" 0
-  label change_background_to_black
+  label _change_background_to_black
   namespace .
 
   ;27 "[40m" 0
@@ -18,18 +18,18 @@
   end namespace
 
 ;val change_background_to_red   27 "[41m" 0
-  label change_background_to_red 
+  label _change_background_to_red 
   namespace .
   ;27 "[41m" 0
     db 27, "[41m", 0
   end namespace
 
 ;val move_cursor                27 "[%U;%UH" 0
-  label move_cursor 
+  label _move_cursor 
   db 27, "[%u;%uH", 0
 
 ;val screen
-  label screen
+  label _screen
   namespace .
   ;text
     db "- - - - - - - - - - - - - - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - -", 10, 13
