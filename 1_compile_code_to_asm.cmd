@@ -1,5 +1,3 @@
 @echo off
-x86_64_bin.exe %1
-echo error = %ERRORLEVEL%
-net helpmsg %ERRORLEVEL%
+ScalpiCompiller.exe %1
 pause
