@@ -1,5 +1,5 @@
-;# ScalpiLang (02.11.2020)
-;TODO чтение исходника
+;# ScalpiLang (03.11.2020)
+;TODO читать данные из исходника и загнать их в буффер
 
 ;def t_slice
   ;def start
@@ -20,15 +20,15 @@
   ;var resault
     _resault equ local_1
 
-  ;-> get_input_file_name           => resault
-    call _get_input_file_name
+  ;-> getInputFileName              => resault
+    call _getInputFileName
     mov [_resault], rax
   
-  ;TODO -> чтение исходника         => resault
-  
-  
+  ;-> readInputFile               => resault
+    call _readInputFile
+    mov [_resault], rax 
+
   ;TODO -> компиляция               => resault
-  
   
   ;TODO -> сохранить                => resault
 
@@ -58,22 +58,22 @@
     SUB RSP, to_link_ret
 
   ;var last_error
-    last_error equ local_1    
+    _last_error equ local_1    
 
   ;~> 'Kernel32\GetLastError => last_error
     ;~> 'Kernel32\GetLastError 
       call [_Kernel32•_GetLastError]
       
     ;=> last_error
-      mov [last_error], rax
+      mov [_last_error], rax
 
   ;text_get_last_error, last_error, ~> printf
     ;text_get_last_error, 
-      lea rax, [text_get_last_error] 
+      lea rax, [_text_get_last_error] 
       mov [argument_1], rax
 
     ;last_error, 
-      mov rax, [last_error] 
+      mov rax, [_last_error] 
       mov [argument_2], rax
     
     ;~> 'msvcrt\printf
@@ -82,22 +82,22 @@
         call [_msvcrt•_printf]
 
   ;return 1
-    mov rax, [last_error]
+    mov rax, [_last_error]
+    jmp __ret
+
+  ;val text_get_last_error 10 13 "last error: %u" 10 13 0
+      label _text_get_last_error
+        db 10, 13, "last error: %u", 10, 13, 0    
 
   label __ret
     add RSP, to_link_ret
     ret
-
-  ;var text_get_last_error 10 13 "last error: %u" 10 13 0
-      label text_get_last_error
-        db 10, 13, "last error: %u", 10, 13, 0    
-
-  end namespace
+    end namespace
 
 
 
-;fn get_input_file_name
-  label _get_input_file_name
+;fn getInputFileName
+  label _getInputFileName
     namespace .
     SUB RSP, to_link_ret
 
@@ -112,19 +112,19 @@
     call [_Kernel32•_GetCommandLineA]
     mov [_p_command_line], rax
   
-  ;'p_command_line, text_command_line, -> copy_symbols
+  ;'p_command_line, text_command_line, -> copySymbols
     mov rcx, [_p_command_line]
     lea rdx, [_text_command_line]
-    call _copy_symbols
+    call _copySymbols
   
   ;debug_text2, text_command_line, -> 'msvcrt\printf
     lea rcx, [_debug_text2]
     mov rdx, [_p_command_line] 
     call [_msvcrt•_printf]
 
-  ;text_command_line -> parse_find_input_name => resault
+  ;text_command_line -> parseFindInputName => resault
     lea rcx, [_text_command_line] 
-    call _parse_find_input_name 
+    call _parseFindInputName 
     mov [_resault], rax
   
   ;# Если не получилось до берём им по умолчанию
@@ -137,10 +137,10 @@
       jmp __end_if
       label __body  
   
-    ;default_input_file_name, input_file_name, -> copy_symbols
+    ;default_input_file_name, input_file_name, -> copySymbols
       lea rcx, [_default_input_file_name]
       lea rdx, [_text_input_file_name]
-      call _copy_symbols
+      call _copySymbols
 
     label __end_if
       end namespace
@@ -173,8 +173,8 @@
 
 
 
-;fn copy_symbols
-  label _copy_symbols
+;fn copySymbols
+  label _copySymbols
     namespace .
     SUB RSP, to_link_ret
     mov [param_1], RCX
@@ -259,8 +259,8 @@
 
 
 
-;fn parse_find_input_name
-  label _parse_find_input_name
+;fn parseFindInputName
+  label _parseFindInputName
     namespace .
     SUB RSP, to_link_ret
     
@@ -487,10 +487,10 @@
   ;var resault
     _resault equ local_4
 
-  ;slice, text_input_file_name, -> slice_copy_symbols_to_text => resault
+  ;slice, text_input_file_name, -> slice_copySymbolsToText => resault
     lea rcx, [_slice]
     lea rdx, [_text_input_file_name]
-    call _slice_copy_symbols_to_text
+    call _slice_copySymbolsToText
     mov [_resault], rax
   
   ;if 'resault != 1 :break
@@ -521,8 +521,8 @@
 
 
 
-;fn slice_copy_symbols_to_text
-  label _slice_copy_symbols_to_text
+;fn slice_copySymbolsToText
+  label _slice_copySymbolsToText
     namespace .
     SUB RSP, to_link_ret
     
@@ -612,6 +612,206 @@
     ADD RSP, to_link_ret
     ret
     end namespace
+
+
+
+;val g_BytesTransferred 0
+  label _g_BytesTransferred
+  dq 0
+
+;FN FileIOCompletionRoutine
+  label _FileIOCompletionRoutine
+    namespace .
+    SUB RSP, to_link_ret
+    mov [param_1], rcx
+    mov [param_2], rdx
+    mov [param_3], r8
+
+  ;param dwErrorCode
+    _dwErrorCode equ param_1
+    
+  ;param dwNumberOfBytesTransfered
+    _dwNumberOfBytesTransfered equ param_2
+    
+  ;param lpOverlapped
+    _lpOverlapped  equ param_3
+    
+  ;text_1, 'dwErrorCode, -> 'msvcrt\printf
+    lea rcx, [_text_1]
+    mov rdx, [_dwErrorCode]
+    call [_msvcrt•_printf]
+  
+  ;text_2, 'dwNumberOfBytesTransfered, -> 'msvcrt\printf
+    lea rcx, [_text_2]
+    mov rdx, [_dwNumberOfBytesTransfered]
+    call [_msvcrt•_printf]
+  
+  ;'dwNumberOfBytesTransfered => g_BytesTransferred
+    mov rax, [_dwNumberOfBytesTransfered] 
+    mov [_g_BytesTransferred], rax
+
+  jmp _ret
+
+  ;val text_1 "Error code:\t%x\n" 0
+    label _text_1
+    db "Error code:\t%x\n", 0
+  
+  ;val text_2 "Number of bytes:\t%x\n" 0  
+    label _text_2
+    db "Number of bytes:\t%x\n", 0
+
+  label _ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn readInputFile
+  label _readInputFile
+    namespace .
+    SUB RSP, to_link_ret
+
+  ;text_input_file_name, text_from_file, %text_from_file -> readFile
+    lea rcx, [_text_input_file_name]
+    lea rdx, [_text_from_file]
+    lea r8,  [_text_from_file•__size]
+    call _readFile
+  
+  label _ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn readFile
+  label _readFile
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;param text_file_name
+    _text_file_name equ param_1
+
+  ;param buffer
+    _buffer equ param_1
+
+  ;param buffer_size
+    _buffer_size equ param_1
+
+  ;var file_handle
+    _file_handle equ local_1
+  
+  ;file_handle, 'text_file_name -> openFile
+    lea rcx, [_file_handle]
+    mov rdx, [_text_file_name]
+    call _openFile
+
+  ;TODO -> readFile
+
+  label _ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+
+;fn openFile
+  label _openFile
+    namespace .
+    SUB RSP, to_link_ret
+    mov [param_1], RCX
+
+  ;param a_file_handle
+    _a_file_handle equ param_1
+  
+  ;param a_file_name
+    _a_file_name equ param_2
+
+  ;var tmp_file_handle
+    _tmp_file_handle equ local_1
+
+  ;call 'Kernel32\CreateFileA
+    ;'a_file_name,
+      mov rax, [_a_file_name]
+      mov [argument_1], rax
+
+    ;GENERIC_READ,
+      mov rax, 0x80000000
+      mov [argument_2], rax        
+
+    ;FILE_SHARE_READ, 
+      mov rax, 0x00000001
+      mov [argument_3], rax
+
+    ;NULL, 
+      lea rax, [_NULL]
+      mov [argument_4], rax
+
+    ;OPEN_EXISTING, 
+      mov rax, 3
+      mov [argument_5], rax
+
+    ;FILE_ATTRIBUTE_NORMAL, 
+      mov rax, 0x00000080
+      mov [argument_6], rax
+
+    ;NULL, 
+      lea rax, [_NULL]
+      mov [argument_7], rax
+  
+    mov rcx,  [argument_1]
+    mov rdx,  [argument_2]
+    mov r8,   [argument_3]
+    mov r9,   [argument_4]
+    call [_Kernel32•_CreateFileA] 
+
+  ;=> tmp_file_handle
+    mov [_tmp_file_handle], rax
+
+  ;if 'tmp_file_handle = INVALID_HANDLE_VALUE
+    label _if_1
+      namespace .
+      mov rax, [_tmp_file_handle]
+      cmp rax, -1
+      je  body
+      jmp end_if
+      label body
+      namespace .
+    
+    ;-> PrintLastError
+      call _PrintLastError
+    
+    ;return 2
+      mov rax, 2
+      jmp _ret
+
+    label end_body
+      end namespace
+      label end_if
+      end namespace    
+
+  ;'tmp_file_handle => 'a_file_handle
+    mov rax, [_tmp_file_handle]
+    mov rcx, [_a_file_handle]
+    mov [rcx], rax
+
+  ;return 1
+    mov  rax, 1
+    jmp _ret
+
+  label _ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
 
 
 
