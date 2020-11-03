@@ -1,8 +1,7 @@
 @echo off
 pushd .
 cd ..
-x86_64_bin.exe examples\12_message_box.txt
-echo error = %ERRORLEVEL%
+ScalpiCompiller.exe examples\12_message_box.txt
 net helpmsg %ERRORLEVEL%
 popd
 pause
