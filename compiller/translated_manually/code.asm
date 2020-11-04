@@ -41,7 +41,7 @@
     call _PrintLastError
     jmp __ret
 
-  ;val debug_text "programm finish with %u" 10 13 0
+  ;[u8] val debug_text "programm finish with %u" 10 13 0
     label _debug_text
       db "programm finish with %u", 10, 13, 0
   
@@ -154,15 +154,15 @@
     mov rax, 1
     jmp __ret
 
-  ;val debug_text "get_input_file_name: input_file_name = %s" 10 13 0
+  ;[u8] val debug_text "get_input_file_name: input_file_name = %s" 10 13 0
     label _debug_text
       db "get_input_file_name: input_file_name = %s", 10, 13, 0
 
-  ;val debug_text2 "get_input_file_name: command_line = %s" 10 13 0
+  ;[u8] val debug_text2 "get_input_file_name: command_line = %s" 10 13 0
     label _debug_text2 
       db "get_input_file_name: command_line = %s", 10, 13, 0
   
-  ;val default_input_file_name "examples\12_message_box.txt" 0
+  ;[u8] val default_input_file_name "examples\12_message_box.txt" 0
     label _default_input_file_name 
       db "examples\12_message_box.txt", 0
 
@@ -248,7 +248,7 @@
 
   jmp __ret
 
-  ;val debug_text "copy_symbols: symbol = %c, %u" 10 13 0
+  ;[u8] val debug_text "copy_symbols: symbol = %c, %u" 10 13 0
     label debug_text
       db "copy_symbols: symbol = %c, %u", 10, 13, 0
 
@@ -652,13 +652,13 @@
 
   jmp _ret
 
-  ;val text_1 "Error code:\t%x\n" 0
+  ;[u8] val text_1 "Error code: %x" 10 13 0
     label _text_1
-    db "Error code:\t%x\n", 0
+    db "Error code: %x", 10, 13, 0
   
-  ;val text_2 "Number of bytes:\t%x\n" 0  
+  ;[u8] val text_2 "Number of bytes:  %x" 10 13 0  
     label _text_2
-    db "Number of bytes:\t%x\n", 0
+    db "Number of bytes:  %x", 10, 13, 0
 
   label _ret
     ADD RSP, to_link_ret
@@ -698,8 +698,8 @@
   ;param text_file_name
     _text_file_name equ param_1
 
-  ;param buffer
-    _buffer equ param_1
+  ;param a_buffer
+    _a_buffer equ param_1
 
   ;param buffer_size
     _buffer_size equ param_1
@@ -707,12 +707,15 @@
   ;var file_handle
     _file_handle equ local_1
   
-  ;file_handle, 'text_file_name -> openFile
+  ;file_handle, 'text_file_name -> file_openFile
     lea rcx, [_file_handle]
     mov rdx, [_text_file_name]
-    call _openFile
+    call _file_openFile
 
-  ;TODO -> readFile
+  ;'file_handle, 'a_buffer, -> file_loadFull
+    mov rcx, [_file_handle]
+    mov rdx, [_a_buffer]
+    call _file_loadFull
 
   label _ret
     ADD RSP, to_link_ret
@@ -722,11 +725,15 @@
 
 
 
-;fn openFile
-  label _openFile
+;fn file_openFile
+  label _file_openFile
     namespace .
     SUB RSP, to_link_ret
+
     mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;param a_file_handle
     _a_file_handle equ param_1
@@ -813,8 +820,292 @@
 
 
 
+;fn text_debug
+  label _text_debug
+    namespace .
+    SUB RSP, to_link_ret
+    mov [param_1], RCX
+
+  ;param a_text
+    _a_text equ param_1
+  
+  ;var pos 0
+    _pos equ local_1
+    mov rax, 0
+    mov [_pos], rax
+
+  ;[u8] var symbol
+    _symbol equ local_2
+
+  ;loop
+    label loop_1
+      namespace .
+      label __continue
+    
+    ;[u8] ''a_text => symbol
+      mov rax, [_a_text]
+      mov al,  [rax]
+      mov [_symbol], al
+
+    ;text_1, 'pos, [u8] 'symbol, [u8] 'symbol -> 'printf
+      lea rcx,  [_text_1]
+      mov rdx,  [_pos]
+      mov r8,   0
+      mov r8l,  [_symbol]
+      mov r9,   0
+      mov r9l,  [_symbol]
+      call [_msvcrt•_printf]
+
+    ;if [u8]'symbol = 0 #break 
+      label __if_1
+        namespace .
+        mov al, [_symbol] 
+        cmp al, 0
+        je __body
+        jmp __end_if
+        label __body
+
+      ;break
+        jmp __break
+
+      label __end_if
+        end namespace
+    
+    ;'a_text + 1 => a_text
+      mov rax, [_a_text]
+      add rax, 1
+      mov [_a_text], rax
+    
+    ;'pos + 1 => pos
+      mov rax, [_pos]
+      add rax, 1
+      mov [_pos], rax
+
+    jmp __continue
+      label __break
+      end namespace
+
+  ;return 1
+    mov rax, 1
+    jmp __ret
+
+  ;[u8] val text_1 "text_debug: \\%u = %c %u" 10 13 0
+    label _text_1 
+      db "text_debug: \\%u = %c %u", 10, 13, 0
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
 
 
 
 
+;fn file_readChar
+  label _file_readChar
+    namespace .
+    SUB RSP, to_link_ret
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+
+  ;param file_handle
+    _file_handle equ param_1
+
+  ;param file_indent
+    _file_indent equ param_2
+  
+  ;param p_resault_char
+    _p_resault_char equ param_3
+
+  ;'file_indent => ol\Pointer
+    mov rax, [_file_indent]
+    mov [_ol•_Pointer], rax
+
+  ;# читаем кусочек
+  ;var resault 0
+    _resault equ local_3
+    mov rax, 0
+    mov [_resault], rax
+
+  ;var resault_char
+    _resault_char equ local_4
+
+  ;!'Kernel32\ReadFileEx
+    ;'file_handle,
+      mov rax, [_file_handle]
+      mov [argument_1], rax
+
+    ;resault_char,
+      lea rax, [_resault_char]
+      mov [argument_2], rax
+
+    ;1,
+      lea rax, [1]
+      mov [argument_3], rax
+
+    ;ol,
+      lea rax, [_ol]
+      mov [argument_4], rax
+
+    ;FileIOCompletionRoutine,
+      lea rax, [_FileIOCompletionRoutine]
+      mov [argument_5], rax
+
+    mov rcx,  [argument_1]
+    mov rdx,  [argument_2]
+    mov r8,   [argument_3]
+    mov r9,   [argument_4]
+    call [_Kernel32•_ReadFileEx]
+    
+  ;=> resault
+    mov [_resault], rax
+
+  ;# выводим на экран посмотреть что там?
+  ;debug_text, buffer, ~> 'msvcrt\printf
+    lea rcx,  [_debug_text]
+    mov rdx,  [_resault_char]
+    mov r8,   [_resault_char]
+    call [_msvcrt•_printf]
+  
+  jmp end_debug
+
+  ;val debug_text "readed text: %c %u" 10 13 0
+    label _debug_text
+      db "readed text: %c %u", 10, 13, 0
+  label end_debug
+
+  ;if resault = 0
+    label __if_3
+      namespace .
+      mov rax, [_resault]
+      cmp rax, 0
+      je __body
+      jmp __end_if
+      label __body
+    
+    call _PrintLastError
+
+    ;return 3
+      mov rax, 3
+      jmp __ret
+    
+    label __end_if
+      end namespace
+
+  ;'resault_char => 'p_resault_char
+    mov rax, [_resault_char]
+    mov rcx, [_p_resault_char]
+    mov [rcx], rax
+
+  ;return 1
+    mov rax, 1
+    jmp __ret
+  
+  ;[OVERLAPPED] val ol
+    label _ol
+
+    ;[ULONG_PTR] val Internal
+      dq 0
+    
+    ;[ULONG_PTR] val InternalHigh
+      dq 0
+    
+    ;[PVOID]     val Pointer
+      label _ol•_Pointer
+        dq 0
+
+    ;[HANDLE]    val hEvent
+      dq 0
+
+    dq 160 dup 0
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn file_loadFull
+  label _file_loadFull
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+  
+  ;param file_handle
+    _file_handle equ param_1
+  
+  ;param a_buffer
+    _a_buffer equ param_2
+
+  ;loop # заполняем буфер
+    label __loop_1
+      namespace .
+
+    ;var file_indent 0
+      _file_indent equ local_2
+      mov rax, 0
+      mov [_file_indent], rax
+    
+    ;var resault_char 0
+        _resault_char equ local_3
+        mov rax, 0
+        mov [_resault_char], rax
+
+    ;var resault
+      _resault equ local_4
+
+    label __continue
+
+    ;'file_handle, 'file_indent, resault_char -> file_readChar
+      mov rcx,  [_file_handle]
+      mov rdx,  [_file_indent]
+      lea r8,   [_resault_char]
+      call _file_readChar
+   
+    ;=> resault
+      mov [_resault], rax
+    
+    ;if 'resault != 1  #break
+      ;break
+
+      mov rax, [_resault]
+      cmp rax, 1
+      jne __break
+
+    ;if 'resault_char = 0 #break
+      ;break
+      
+      mov rax, [_resault_char]
+      cmp rax, 0
+      je __break
+
+    ;'resault_char => 'a_buffer + 'file_indent
+      mov rax, [_resault_char]
+      mov rcx, [_a_buffer]
+      add rcx, [_file_indent]
+      mov [rcx], rax
+    
+    ;'file_indent + 1 => file_indent
+      mov rax, [_file_indent]
+      inc rax
+      mov [_file_indent], rax
+
+    jmp __continue
+      label __break
+      end namespace
+    
+  ;return 1
+    mov rax, 1
+    jmp __ret
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
 
