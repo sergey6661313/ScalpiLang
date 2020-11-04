@@ -37,11 +37,7 @@
       задача компилятора: переводить код с языка ScalpiLang в язык ассемблера fasmg.
 
       check points:
-        [ ] читать фаил
-            [x] read first argument as filename
-            [ ] read file data
-                [X] open file
-                [ ] read data
+        [X] читать фаил
         [ ] компилировать
         [ ] сохранить
 
