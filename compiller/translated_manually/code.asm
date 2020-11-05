@@ -1,5 +1,7 @@
-;# ScalpiLang (03.11.2020)
-;TODO читать данные из исходника и загнать их в буффер
+;# ScalpiLang (05.11.2020)
+;# TODO написать функцию вывода на экран slice и проверить получилось ли разбить data из input_file на строки
+
+
 
 ;def t_slice
   ;def start
@@ -20,18 +22,22 @@
   ;var resault
     _resault equ local_1
 
-  ;-> getInputFileName              => resault
+  ;-> getInputFileName            => resault ??
     call _getInputFileName
     mov [_resault], rax
-  
-  ;-> readInputFile               => resault
+    cmp rax, 1
+    jne __ret
+
+  ;-> readInputFile               => resault ??
     call _readInputFile
     mov [_resault], rax 
+    cmp rax, 1
+    jne __ret
 
-  ;TODO -> компиляция               => resault
+  ;-> compile                     => resault
   
-  ;TODO -> сохранить                => resault
-
+  ;TODO -> сохранить              => resault
+  
   ;debug_text, 'resault -> 'msvcrt\printf
     lea rcx, [_debug_text]
     mov rdx, rax
@@ -672,7 +678,7 @@
     namespace .
     SUB RSP, to_link_ret
 
-  ;text_input_file_name, text_from_file, %text_from_file -> readFile
+  ;text_input_file_name, text_from_file, text_from_file\_size -> readFile
     lea rcx, [_text_input_file_name]
     lea rdx, [_text_from_file]
     lea r8,  [_text_from_file•__size]
@@ -962,18 +968,11 @@
     mov [_resault], rax
 
   ;# выводим на экран посмотреть что там?
-  ;debug_text, buffer, ~> 'msvcrt\printf
+  ;#debug_text, buffer, ~> 'msvcrt\printf
     lea rcx,  [_debug_text]
     mov rdx,  [_resault_char]
     mov r8,   [_resault_char]
-    call [_msvcrt•_printf]
-  
-  jmp end_debug
-
-  ;val debug_text "readed text: %c %u" 10 13 0
-    label _debug_text
-      db "readed text: %c %u", 10, 13, 0
-  label end_debug
+    ;call [_msvcrt•_printf]
 
   ;if resault = 0
     label __if_3
@@ -1019,6 +1018,10 @@
       dq 0
 
     dq 160 dup 0
+
+  ;val debug_text "readed text: %c %u" 10 13 0
+    label _debug_text
+      db "readed text: %c %u", 10, 13, 0
 
   label __ret
     ADD RSP, to_link_ret
@@ -1109,3 +1112,190 @@
     ret
     end namespace
 
+
+
+;fn compile
+  label _compile
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;-> define_lines => resault ??
+    call _define_lines
+    cmp rax, 1
+    jne __ret 
+
+  ;TODO  для каждой строки
+  ;    магия!
+
+  ;return 1
+    mov rax, 1
+    jmp __ret
+  
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn define_lines
+  label _define_lines
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;loop
+    label __loop_1
+      namespace .
+    
+    ;var symbol
+      _symbol equ local_1
+    
+    ;var pos            text_from_file
+      _pos equ local_2
+      lea rax, [_text_from_file]
+      mov [_pos], rax
+    
+    ;var start_new_line 'pos
+      _start_new_line equ local_3
+      mov rax, [_pos]
+      mov [_start_new_line], rax
+    
+    label __continue
+    
+    ;''pos => symbol
+      mov rax, [_pos]
+      mov rax, [rax]
+      mov [_symbol], rax
+
+    ;if 'symbol = 0 #break
+      label __if_1
+        namespace .
+        mov rax, [_symbol]
+        cmp rax, 0
+        je __body
+        jmp __end_if
+        label __body
+      
+      ;break
+        jmp __break
+     
+      label __end_if
+        end namespace
+
+    ;if 'symbol != 10 and 'symbol != 13
+      label __if_2 
+        namespace .
+        mov rax, [_symbol] 
+        cmp rax, 10
+        je __else
+        mov rax, [_symbol]
+        cmp rax, 13
+        je __else
+        label __body
+      
+      ;'pos => lines + 'lines_count * t_slice\_size + t_slice\end
+        ;'lines_count * t_slice\_size => local_4
+          mov rax, [_lines_count]
+          mov rcx, _t_slice•__size
+          mul rcx
+          mov [local_4], rax
+
+        ;'pos => lines + 'local_4 + t_slice\end
+          mov rax, [_pos]
+          lea rcx, [_lines]
+          add rcx, [local_4]
+          add rcx, _t_slice•_end
+          mov [rcx], rax
+      
+      jmp __end_if
+
+    ;else
+      label __else
+
+      ;'start_new_line => lines + 'lines_count * t_slice\_size + t_slice\start
+        ;'lines_count * t_slice\_size => local_4
+          mov rax, [_lines_count]
+          mov rcx, _t_slice•__size
+          mul rcx
+          mov [local_4], rax
+        
+        ;'start_new_line => lines + 'local_4 + t_slice\start
+          mov rax, [_start_new_line]
+          lea rcx, [_lines]
+          add rcx, [local_4]
+          add rcx, _t_slice•_start
+          mov [rcx], rax
+
+      ;'lines_count + 1 => lines_count
+        mov rax, [_lines_count]
+        add rax, 1 
+        mov [_lines_count], rax
+      
+      ;loop
+        label __loop_2
+          namespace .
+          label __continue
+
+        ;if 'symbol != 10 and 'symbol != 13
+          label __if_1
+            namespace .
+            mov rax, [_symbol]
+            cmp rax, 10
+            je __else
+            mov rax, [_symbol]
+            cmp rax, 13
+            je __else
+            label __body
+
+          ;'pos => start_new_line
+            mov rax, [_pos]
+            mov [_start_new_line], rax
+          ;break
+            jmp __break
+
+          label __else
+          label __end_if
+            end namespace
+        
+        ;'pos + 1 => pos
+          mov rax, [_pos]
+          add rax, 1
+          mov [_pos], rax
+        
+        jmp __continue
+          label __break
+          end namespace
+      
+      ;continue
+        jmp __continue
+      
+      label __end_if
+        end namespace
+    
+    ;'pos + 1 => pos
+      mov rax, [_pos]
+      add rax, 1
+      mov [_pos], rax
+    
+    jmp __continue
+      label __break
+      end namespace
+
+  ;return 1
+    mov rax, 1
+    jmp __ret
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
