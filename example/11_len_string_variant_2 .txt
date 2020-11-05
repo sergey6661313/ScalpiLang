@@ -1,4 +1,4 @@
-﻿val hw "hello world" 0
+﻿[u8] val hw "hello world" 0
 
 # функция вычесляющяя длину строки
 fn str_len

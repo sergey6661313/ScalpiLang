@@ -1,7 +1,7 @@
 ﻿import msvcrt "msvcrt.dll"
   fn printf "printf"
 
-val hw "hello world" 0
+[u8] val hw "hello world" 0
 
 fn start
   hw -> 'msvcrt\printf
