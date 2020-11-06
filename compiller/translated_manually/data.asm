@@ -44,3 +44,7 @@
     db "- - - - - - - - - - - - - - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - -", 10, 13
   db 0
   end namespace
+
+;[u8] val text_new_line 10 13 0
+  label _text_new_line
+    db 10, 13, 0 

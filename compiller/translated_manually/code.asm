@@ -1,5 +1,5 @@
-;# ScalpiLang (05.11.2020)
-;# TODO написать функцию вывода на экран slice и проверить получилось ли разбить data из input_file на строки
+;# ScalpiLang (06.11.2020)
+;# TODO FIX ALL THIS!
 
 
 
@@ -18,6 +18,10 @@
   label start
     namespace .
     SUB RSP, to_link_ret
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;var resault
     _resault equ local_1
@@ -34,10 +38,14 @@
     cmp rax, 1
     jne __ret
 
-  ;-> compile                     => resault
-  
+  ;-> compile                     => resault ??
+    call _compile
+    cmp rax, 1
+    jne __ret
+
   ;TODO -> сохранить              => resault
   
+  label __pre_ret
   ;debug_text, 'resault -> 'msvcrt\printf
     lea rcx, [_debug_text]
     mov rdx, rax
@@ -62,18 +70,22 @@
   label _PrintLastError
     namespace .
     SUB RSP, to_link_ret
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;var last_error
     _last_error equ local_1    
 
-  ;~> 'Kernel32\GetLastError => last_error
-    ;~> 'Kernel32\GetLastError 
+  ;-> 'Kernel32\GetLastError => last_error
+    ;-> 'Kernel32\GetLastError 
       call [_Kernel32•_GetLastError]
       
     ;=> last_error
       mov [_last_error], rax
 
-  ;text_get_last_error, last_error, ~> printf
+  ;text_get_last_error, last_error, -> 'msvcrt\printf
     ;text_get_last_error, 
       lea rax, [_text_get_last_error] 
       mov [argument_1], rax
@@ -82,7 +94,7 @@
       mov rax, [_last_error] 
       mov [argument_2], rax
     
-    ;~> 'msvcrt\printf
+    ;-> 'msvcrt\printf
         mov rcx, [argument_1]
         mov rdx, [argument_2]
         call [_msvcrt•_printf]
@@ -106,6 +118,10 @@
   label _getInputFileName
     namespace .
     SUB RSP, to_link_ret
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;var p_command_line
     _p_command_line equ  local_1
@@ -185,6 +201,8 @@
     SUB RSP, to_link_ret
     mov [param_1], RCX
     mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
     
   ;param from
    from equ param_1
@@ -629,9 +647,10 @@
   label _FileIOCompletionRoutine
     namespace .
     SUB RSP, to_link_ret
-    mov [param_1], rcx
-    mov [param_2], rdx
-    mov [param_3], r8
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;param dwErrorCode
     _dwErrorCode equ param_1
@@ -677,6 +696,10 @@
   label _readInputFile
     namespace .
     SUB RSP, to_link_ret
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;text_input_file_name, text_from_file, text_from_file\_size -> readFile
     lea rcx, [_text_input_file_name]
@@ -713,17 +736,25 @@
   ;var file_handle
     _file_handle equ local_1
   
-  ;file_handle, 'text_file_name -> file_openFile
+  ;file_handle, 'text_file_name -> file_openFile ??
     lea rcx, [_file_handle]
     mov rdx, [_text_file_name]
     call _file_openFile
+    cmp rax, 1
+    jne __ret
 
-  ;'file_handle, 'a_buffer, -> file_loadFull
+  ;'file_handle, 'a_buffer, -> file_loadFull ??
     mov rcx, [_file_handle]
     mov rdx, [_a_buffer]
     call _file_loadFull
+    cmp rax, 1
+    jne __ret
 
-  label _ret
+  ;return 1
+    mov rax, 1
+    jmp __ret
+
+  label __ret
     ADD RSP, to_link_ret
     ret
     end namespace
@@ -831,6 +862,9 @@
     namespace .
     SUB RSP, to_link_ret
     mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
 
   ;param a_text
     _a_text equ param_1
@@ -914,6 +948,7 @@
     mov [param_1], RCX
     mov [param_2], RDX
     mov [param_3], R8
+    mov [param_4], R9
 
   ;param file_handle
     _file_handle equ param_1
@@ -968,11 +1003,11 @@
     mov [_resault], rax
 
   ;# выводим на экран посмотреть что там?
-  ;#debug_text, buffer, ~> 'msvcrt\printf
+  ;debug_text, buffer, ~> 'msvcrt\printf
     lea rcx,  [_debug_text]
     mov rdx,  [_resault_char]
     mov r8,   [_resault_char]
-    ;call [_msvcrt•_printf]
+    call [_msvcrt•_printf]
 
   ;if resault = 0
     label __if_3
@@ -1074,29 +1109,29 @@
     ;=> resault
       mov [_resault], rax
     
-    ;if 'resault != 1  #break
+    ;if [u8]'resault != 1  #break
       ;break
 
       mov rax, [_resault]
       cmp rax, 1
       jne __break
 
-    ;if 'resault_char = 0 #break
+    ;if [u8]'resault_char = 0 #break
       ;break
       
-      mov rax, [_resault_char]
-      cmp rax, 0
+      mov al, [_resault_char]
+      cmp al, 0
       je __break
 
-    ;'resault_char => 'a_buffer + 'file_indent
-      mov rax, [_resault_char]
+    ;[u8]'resault_char => 'a_buffer + 'file_indent
+      mov al, [_resault_char]
       mov rcx, [_a_buffer]
       add rcx, [_file_indent]
-      mov [rcx], rax
+      mov [rcx], al
     
     ;'file_indent + 1 => file_indent
       mov rax, [_file_indent]
-      inc rax
+      add rax, 1
       mov [_file_indent], rax
 
     jmp __continue
@@ -1128,6 +1163,14 @@
     call _define_lines
     cmp rax, 1
     jne __ret 
+
+  ;lines -> slice_print_proticles
+    lea rcx, [_lines]
+    call _slice_print_proticles
+
+  ;lines -> slice_print
+    lea rcx, [_lines]
+    call _slice_print
 
   ;TODO  для каждой строки
   ;    магия!
@@ -1165,6 +1208,11 @@
       lea rax, [_text_from_file]
       mov [_pos], rax
     
+    ;debug_text2, text_from_file, -> 'msvcrt\printf
+      lea rcx, [_debug_text2]
+      lea rdx, [_text_from_file]
+      call [_msvcrt•_printf]
+
     ;var start_new_line 'pos
       _start_new_line equ local_3
       mov rax, [_pos]
@@ -1172,16 +1220,24 @@
     
     label __continue
     
-    ;''pos => symbol
+    ;[u8]''pos => symbol
       mov rax, [_pos]
-      mov rax, [rax]
-      mov [_symbol], rax
+      mov al, [rax]
+      mov [_symbol], al
+    
+    ;debug_text, [u8]'symbol -> msvcrt\printf
+      lea rcx, [_debug_text]
+      mov rdx, 0
+      mov dl, [_symbol]
+      mov r8, 0
+      mov r8l, [_symbol]
+      call [_msvcrt•_printf]
 
-    ;if 'symbol = 0 #break
+    ;if [u8]'symbol = 0 #break
       label __if_1
         namespace .
-        mov rax, [_symbol]
-        cmp rax, 0
+        mov al, [_symbol]
+        cmp al, 0
         je __body
         jmp __end_if
         label __body
@@ -1192,14 +1248,14 @@
       label __end_if
         end namespace
 
-    ;if 'symbol != 10 and 'symbol != 13
+    ;if [u8]'symbol != 10 and 'symbol != 13
       label __if_2 
         namespace .
-        mov rax, [_symbol] 
-        cmp rax, 10
+        mov al, [_symbol] 
+        cmp al, 10
         je __else
-        mov rax, [_symbol]
-        cmp rax, 13
+        mov al, [_symbol]
+        cmp al, 13
         je __else
         label __body
       
@@ -1294,6 +1350,139 @@
   ;return 1
     mov rax, 1
     jmp __ret
+
+  ;[u8]val debug_text "define_lines: symbol: %c %u" 10 13 0
+    label _debug_text
+      db "define_lines: symbol: %c %u", 10, 13, 0
+
+  ;[u8]val debug_text2 "define_lines: text_from_file: %s" 10 13 0
+    label _debug_text2
+      db "define_lines: text_from_file: %s", 10, 13, 0
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn slice_print_proticles
+  label _slice_print_proticles
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;param a_slice
+    _a_slice equ param_1
+
+  ;var start 'a_slice
+    _start equ local_1
+    mov rax, [_a_slice]
+    mov [_start], rax
+  
+  ;var end   'a_slice + t_slice\end
+    label _end
+    mov rax, [_a_slice]
+    add rax, 8
+    mov [_end], rax
+
+  ;text_1, 'start, 'end, -> 'msvcrt\printf
+    lea rcx, [_text_1]
+    mov rdx, [_start]
+    mov r8, [_end]
+    call [_msvcrt•_printf]
+  
+  ;return 1
+    mov rax, 1
+    jmp __ret
+  
+  ;[u8] val text_1 "define_lines: slice: %u, %u" 10 13 0
+    label _text_1
+      db "define_lines: slice: %u, %u", 10, 13, 0
+  
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+
+
+
+;fn slice_print
+  label _slice_print
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;param a_slice
+    _a_slice equ param_1
+
+  ;var start '('a_slice)
+    _start equ local_1
+    mov rax, [_a_slice]
+    mov rax, [rax]
+    mov [_start], rax
+  
+  ;var end   '('a_slice + t_slice\end)
+    label _end
+    mov rax, [_a_slice]
+    add rax, 8
+    mov rax, [rax]
+    mov [_end], rax
+
+  ;loop
+    label loop_1
+    namespace .
+    label __continue
+
+    ;text_1, [u8]''start, -> 'msvcrt\printf
+      lea rcx, [_text_1]
+      mov rax, [_start]
+      mov rdx, 0
+      mov dl, [rax]
+      call [_msvcrt•_printf]
+    
+    ;'start + 1 => start
+      mov rax, [_start]
+      add rax, 1
+      mov [_start], rax
+    
+    ;if 'start = 'end
+      label __if_1
+        namespace .
+        mov rax, [_start]
+        cmp rax, [_end]
+        jne __end_if
+        label __body
+      
+      ;break
+        jmp __break
+      
+      label __end_if
+        end namespace
+
+    jmp __continue
+      label __break
+      end namespace
+
+  ;text_new_line -> 'msvcrt\printf
+    lea rcx, [_text_new_line]
+    call [_msvcrt•_printf]
+
+  ;return 1
+    mov rax, 1
+    jmp __ret
+
+  ;[u8] val text_1 "char: %c" 0
+    label _text_1
+    db "slice_print: char: %c",10, 13, 0
 
   label __ret
     ADD RSP, to_link_ret
