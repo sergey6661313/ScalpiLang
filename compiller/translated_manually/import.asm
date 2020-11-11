@@ -16,10 +16,14 @@
     ;fn sprintf
       _msvcrt•_sprintf         dq RVA _msvcrt•_sprintf•__name
     
+    ;fn malloc
+      _msvcrt•_malloc          dq RVA _msvcrt•_malloc•__name
+    
     dq 0
       _msvcrt•__name              db 'msvcrt.dll',0
       _msvcrt•_printf•__name      db 0, 0, 'printf', 0
       _msvcrt•_sprintf•__name     db 0, 0, 'sprintf', 0   
+      _msvcrt•_malloc•__name      db 0, 0, 'malloc', 0
 
 
 

@@ -14,6 +14,21 @@
 
 
 
+;def t_line_text
+  
+  ;def a_prev_line
+    _t_line_text•_a_prev_line = 0
+  
+  ;def a_next_line
+    _t_line_text•_a_next_line = 8
+  
+  ;def[u8 512] buffer
+    _t_lines_text•_buffer = 16
+    _lines_text•_buffer•__size = 512
+  _t_line_text•__size = 8 + 8 + 512
+
+
+
 ;fn start
   label start
     namespace .
@@ -26,18 +41,6 @@
   ;var resault
     _resault equ local_1
     
-        ;testing_line -> slice_print_proticles
-          lea rcx, [_testing_line]
-          ;call _slice_print_proticles
-
-        ;testing_line, -> slice_copy_and_print
-          lea rcx, [_testing_line]
-          ;call _slice_copy_and_print
-
-        ;testing_line -> slice_print
-          lea rcx, [_testing_line]
-          ;call _slice_print
-
   ;-> getInputFileName            => resault ??
     call _getInputFileName
     mov [_resault], rax
@@ -65,7 +68,7 @@
     call [_msvcrt•_printf]
 
   ;return -> PrintLastError 
-    call _PrintLastError
+    ;call _PrintLastError
     jmp __ret
 
   ;[u8] val debug_text "programm finish with %u" 10 13 0
@@ -147,11 +150,6 @@
     call [_Kernel32•_GetCommandLineA]
     mov [_p_command_line], rax
   
-  ;_debug_text3, p_command_line' ->  'msvcrt\printf
-    lea rcx, [_debug_text3] 
-    mov rdx, [_p_command_line]
-    call [_msvcrt•_printf]
-  
   ;'p_command_line, text_command_line, -> copySymbols
     mov rcx, [_p_command_line]
     lea rdx, [_text_command_line]
@@ -201,10 +199,6 @@
   ;[u8] val debug_text2 "get_input_file_name: command_line = %s" 10 13 0
     label _debug_text2 
       db "get_input_file_name: command_line = %s", 10, 13, 0
-  
-  ;[u8] val debug_text3 "get_input_file_name: p_command_line = %s" 10 13 0
-    label _debug_text3 
-      db "get_input_file_name: p_command_line = %s", 10, 13, 0
   
   ;[u8] val default_input_file_name "examples\12_message_box.txt" 0
     label _default_input_file_name 
@@ -884,7 +878,7 @@
       namespace .
     
     ;-> PrintLastError
-      call _PrintLastError
+      ;call _PrintLastError
     
     ;return 2
       mov rax, 2
@@ -1072,7 +1066,7 @@
       jmp __end_if
       label __body
     
-    call _PrintLastError
+    ;call _PrintLastError
 
     ;return 3
       mov rax, 3
@@ -1217,9 +1211,11 @@
     call _define_lines
     cmp rax, 1
     jne __ret 
-
-  ;TODO  для каждой строки
-  ;    магия!
+  
+  ;-> define_lines_2 => resault ??
+    call _define_lines_2
+    cmp rax, 1
+    jne __ret 
 
   ;return 1
     mov rax, 1
@@ -1362,7 +1358,6 @@
     ADD RSP, to_link_ret
     ret
     end namespace
-; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 
 
 
@@ -1401,14 +1396,6 @@
       _a_line_in_lines equ local_1
       lea rax, [_lines]
       mov [_a_line_in_lines], rax
-         
-      ;debug_text_2, symbol', symbol', -> msvcrt\printf'
-        lea rcx, [_debug_text]
-        mov rdx, 0
-        mov dl, [_symbol]
-        mov r8, 0
-        mov r8l, [_symbol]
-        call [_msvcrt•_printf]
 
     ;var a_line_start       text_from_file
       _a_line_start equ local_2
@@ -1492,18 +1479,6 @@
             mov r8, [rax]
             ;call [_msvcrt•_printf]
 
-          ;a_line_in_lines' -> slice_print_proticles
-            ;mov rcx, [_a_line_in_lines]
-            ;call _slice_print_proticles
-
-          ;a_line_in_lines' -> slice_print
-            ;mov rcx, [_a_line_in_lines]
-            ;call _slice_print
-
-          ;a_line_in_lines', -> slice_copy_and_print
-            mov rcx, [_a_line_in_lines]
-            call _slice_copy_and_print
-
           ;a_line_in_lines' + t_slice\_size => a_line_in_lines
             mov rax, [_a_line_in_lines] 
             add rax, _t_slice•__size
@@ -1563,12 +1538,6 @@
         label __end_if
           end namespace
 
-      ;debug_text, symbol', -> msvcrt\printf'
-        lea rcx, [_debug_text]
-        mov rdx, 0
-        mov dl, [_symbol]
-        ;call [_msvcrt•_printf]
-
       label __end_when
         end namespace      
 
@@ -1580,32 +1549,22 @@
     jmp __continue
     label __break
       end namespace
-    
-  ; DEBUG
-    mov rcx, debug_1
-    call [_msvcrt•_printf]
-    jmp _end_debug
-    label debug_1
-    db "DEBUG TEXT", 10, 13, 0
-    label _end_debug
-    ;mov rax, 3
-    ;jmp __ret
 
   ;return 1
     mov rax, 1
     jmp __ret
 
-  ;val[u8] debug_text "define_lines: symbol: %c %u" 0
+  ;val[u8] debug_text "define_lines: symbol: %c %u" 10 13 0
     label _debug_text
-      db "%c", 0
+      db "define_lines: symbol: %c", 10, 13, 0 
 
-  ;val[u8] debug_text_2 10 13 "define_lines2: symbol: %u" 10 13 0
+  ;val[u8] debug_text_2 "define_lines2: symbol: %u" 10 13 0
     label _debug_text_2
-      db 10, 13, "define_lines_2: symbol: %u", 10, 13, 0
+      db "define_lines_2: symbol: %u", 10, 13, 0
 
-  ;val[u8] debug_text_3 10 13 "define_lines_3: slice: %u %u" 10 13 0
+  ;val[u8] debug_text_3 "define_lines_3: slice: %u %u" 10 13 0
     label _debug_text_3
-      db 10, 13, "define_lines_3: slice: %u %u", 10, 13, 0
+      db "define_lines_3: slice: %u %u", 10, 13, 0
 
   label __ret
     ADD RSP, to_link_ret
@@ -1684,6 +1643,192 @@
   ;val debug_text " slice_copy_and_print: address slice: %u" 10 13 0
     label _debug_text 
     db "slice_copy_and_print: address slice: %u", 10, 13, 0
+
+  label __ret
+    ADD RSP, to_link_ret
+    ret
+    end namespace
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+
+
+
+;fn define_lines_2
+  label _define_lines_2
+    namespace .
+    SUB RSP, to_link_ret
+    
+    mov [param_1], RCX
+    mov [param_2], RDX
+    mov [param_3], R8
+    mov [param_4], R9
+
+  ;loop
+    label _loop_1
+      namespace .
+      label __continue
+    
+    ;var a_line
+      _a_line equ local_1
+    
+    ;var a_line_start
+      _a_line_start equ local_2
+    
+    ;var a_line_end
+      _a_line_end equ local_3
+    
+    ;var slice_size
+      _slice_size equ local_4
+    
+    ;var line_num
+      _line_num equ local_5
+    
+    ;var a_prev_line 0
+      _a_prev_line equ local_6
+      mov rax, 0
+      mov [_a_prev_line], rax
+    
+    ;var a_new_line_text
+      _a_new_line_text equ local_7
+    
+    ;var a_buffer
+      _a_buffer equ local_8
+    
+  mov rcx, debug_1
+  lea rdx, [_text_from_file]
+  call [_msvcrt•_printf]
+  jmp _end_debug
+  label debug_1
+  db "DEBUG TEXT", 10, 13, 0
+
+  label _end_debug
+
+    ;if line_num' > lines_count'
+      label __if_1
+        namespace .
+        mov rax, [_line_num]
+        mov rcx, [_lines_count]
+        cmp rax, rcx
+        ja __body
+        jmp __end_if
+        label __body
+      
+      ;break
+        jmp __break
+
+      label __end_if
+        end namespace
+    
+    ;# берём строку
+    ;lines + line_num' * slice_size => line
+      ;line_num' * slice_size => local_9
+        mov rax, [_line_num]
+        lea rcx, [_slice_size]
+        mul rcx
+        mov [local_9], rax
+      
+      ;lines + local_9' => line
+        lea rax, [_lines]
+        add rax, [local_9] 
+        mov [_a_line], rax
+
+    ;a_line'' => a_line_start
+      mov rax, [_a_line]
+      mov rax, [rax] 
+      mov [_a_line_start], rax
+    
+    ;(a_line' + t_slice\end)' => a_line_end
+      mov rax, [_a_line]
+      add rax, 8
+      mov rax, [rax]
+      mov [_a_line_end], rax
+  
+    ;line_end' - line_start' => line_size
+      mov rax, [_a_line_end]
+      sub rax, [_a_line_start]
+      mov [_slice_size], rax
+    
+    ;# выделяем буфер 
+    ;t_line_text._size, -> msvcrt\malloc => a_new_line_text
+      lea rcx, [_t_line_text•__size]
+      call [_msvcrt•_malloc]
+      mov [_a_new_line_text], rax
+    
+    ;if a_new_line_text' = 0
+      label __if_2
+        namespace .
+        mov rax, [_a_new_line_text]
+        cmp rax, 0
+        je __body
+        jmp __ret
+        label __body
+
+      ;text_error_1, -> msvcrt\printf'
+        lea rcx, [_text_error_1]
+        call [_msvcrt•_printf]
+      
+      ;return 6
+        mov rax, 6
+        jmp __ret
+
+      label __end_if
+        end namespace
+
+    ;a_new_line_text' + t_lines_text\buffer => a_buffer
+      mov rax, [_a_new_line_text]
+      add rax, [_t_lines_text•_buffer]
+      mov [_a_buffer], rax
+    
+    ;# копируем туда строку
+    ;a_line, a_buffer', -> _slice_copySymbolsToText
+      lea rcx, [_a_line]
+      mov rdx, [_a_buffer]
+      call _slice_copySymbolsToText
+    
+    ;0 => a_buffer' + line_size'
+      mov rax, 0
+      mov rcx, [_a_buffer]
+      add rcx, [_slice_size]
+      mov [rcx], rax
+    
+    ;text_debug_1, a_buffer', -> msvcrt\printf
+      lea rcx, [_text_debug_1]
+      mov rdx, [_a_buffer]
+      call [_msvcrt•_printf]
+    
+    ;a_prev_line => a_new_line_text' + t_line_text\a_prev_line
+      lea rax, [_a_prev_line]
+      mov rcx, [_a_new_line_text]
+      add rcx, _t_line_text•_a_prev_line
+      mov [rcx], rax
+
+    ;a_new_line_text' => a_prev_line' + t_line_text\a_next_line
+      mov rax, [_a_new_line_text]
+      mov rcx, [_a_prev_line]
+      add rcx, _t_line_text•_a_next_line
+      mov [rcx], rax
+    
+    ;line_num' + 1 => line_num
+      mov rax, [_line_num]
+      add rax, 1
+      mov [_line_num], rax
+    
+    ;continue
+      jmp __continue
+
+    label __break
+      end namespace
+    
+  ;return 1
+    mov rax, 1
+    jmp __ret
+    
+  ;val[u8] text_error_1 "compile: malloc return 0" 10 13 0
+    label _text_error_1 
+    db "compile: malloc return 0", 10, 13, 0
+  
+  ;val[u8] text_debug_1 "compile: line = %s" 10 13 0
+    label _text_debug_1 
+    db "compile: line = %s", 10, 13, 0
 
   label __ret
     ADD RSP, to_link_ret
