@@ -1,4 +1,4 @@
-﻿[u8] val hw "hello world" 0
+﻿val[u8] hw "hello world" 0
 
 # функция вычесляющяя длину строки
 fn str_len
@@ -7,12 +7,12 @@ fn str_len
   # в цикле перебираем символы строки пока не дойдём до символа обозначаемого 0
   loop
     var      len    0
-    [u8] var symbol 0
+    var[u8]  symbol 0
 
-    [u8]'('str + 'len) => symbol   # получаем символ из строки 
-    if 'symbol = 0                 # если ноль
-      return 'len                  # тогда возвращяем длинну
-    'len + 1 => len	           # иначе инкрементируем длинну
+    (str' + len')'[u8] => symbol   # получаем символ из строки 
+    if symbol' = 0                 # если ноль
+      return len'                  # тогда возвращяем длинну
+    len' + 1 => len	           # иначе инкрементируем длинну
 
 fn start
   return hw, -> str_len

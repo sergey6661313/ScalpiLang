@@ -2,7 +2,7 @@ import User32
   fn MessageBoxA
 
 fn start
-  return 0, title, message, 0 -> 'User32\MessageBoxA
+  return 0, title, message, 0, -> User32\MessageBoxA'
 
-  [u8] val title   "Alert!" 0
-  [u8] val message "hello world!" 0
+  val[u8] title   "Alert!" 0
+  val[u8] message "hello world!" 0

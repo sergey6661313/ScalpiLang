@@ -2,7 +2,7 @@
   param first_arg
   param second_arg
 
-  return 'first_arg * 'second_arg
+  return first_arg' * second_arg'
 
 fn start 
   -> multiplecate (6, 7,)
