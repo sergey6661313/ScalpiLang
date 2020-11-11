@@ -1,5 +1,16 @@
 ;31.10.2020
 
+;val testing_line
+  label _testing_line
+  dq _testing_text
+  dq _end_testing_text
+
+;val testing_text
+  label _testing_text 
+    db "TESTING"
+  label _end_testing_text
+    db "vvvvv",  0
+
 ;val NULL real_NULL
   label _NULL 
     dq _real_NULL
@@ -45,6 +56,6 @@
   db 0
   end namespace
 
-;[u8] val text_new_line 10 13 0
+;val[u8] text_new_line 10 13 0
   label _text_new_line
     db 10, 13, 0 
