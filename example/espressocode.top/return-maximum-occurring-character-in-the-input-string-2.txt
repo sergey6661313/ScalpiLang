@@ -1,0 +1,50 @@
+import msvcrt
+  fn printf
+
+fn getMaxOccuringChar
+  param a_str
+  param a_char
+  var [u8] result " "
+
+  # Построить массив подсчета символов из ввода
+  var [u8 255] chars_count 0
+  
+  loop # Обход строки и ведение количества каждого символа
+    var symbol 0
+    var a_symbol a_str'
+    
+    a_symbol''[u8] => symbol
+    if symbol'[u8] = 0
+      break
+    
+    (chars_count + symbol'[u8])' + 1 => chars_count + symbol'[u8]
+    
+    a_symbol' + 1 => a_symbol 
+
+  var a_offset_max 
+  loop # находим самый частый
+    var max -1 # Инициализировать максимальное количество
+    var a_symbol chars_count
+    var count 0
+    
+    a_symbol''[u8] => count
+    if count' > max'
+      count' => max
+      a_symbol' => a_offset_max
+
+    a_symbol' + 1 => a_symbol
+
+   a_offset_max' - chars_count => a_char'
+  
+
+
+
+val str "sample string" 0
+
+fn start
+  var char
+  val text_1 "Max occurring character is %c" 10 13 0
+  
+  str, char, -> getMaxOccuringChar 
+  text_1, char'[u8], -> msvcrt\printf'
+  
