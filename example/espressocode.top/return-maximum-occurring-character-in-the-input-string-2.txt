@@ -6,9 +6,10 @@ fn getMaxOccuringChar
   param a_char
   var [u8] result " "
 
-  # Построить массив подсчета символов из ввода
-  var [u8 255] chars_count 0
-  
+
+  var [u8 255] chars_count 0 # массив повторений символов
+  var a_offset_max           # аддрес того элемента в массиве в котором юудет самое большое количество
+
   loop # Обход строки и ведение количества каждого символа
     var symbol 0
     var a_symbol a_str'
@@ -21,8 +22,9 @@ fn getMaxOccuringChar
     
     a_symbol' + 1 => a_symbol 
 
-  var a_offset_max 
+
   loop # находим самый частый
+    var a_out_of_bounds chars_count + 254
     var max -1 # Инициализировать максимальное количество
     var a_symbol chars_count
     var count 0
@@ -34,7 +36,10 @@ fn getMaxOccuringChar
 
     a_symbol' + 1 => a_symbol
 
-   a_offset_max' - chars_count => a_char'
+    if a_symbol' > a_out_of_bounds'
+      break
+      
+  a_offset_max' - chars_count => a_char'
   
 
 
