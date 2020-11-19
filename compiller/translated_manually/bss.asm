@@ -44,3 +44,9 @@
   label _lines_src
   _lines_src•__size = _t_line_text•__size * 1000
   rb _lines_src•__size
+
+
+
+;val a_first_line
+  label _a_first_line
+  rq 1
