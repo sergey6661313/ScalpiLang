@@ -53,4 +53,18 @@
   db "format PE64 console", 0
   _text_line_2•__size = $ - _text_line_2
 
+;val[u8] text_section_import "section '.idata' import data readable writeable" 0
+  label _text_section_import 
+  ;[u8] 
+    db "section '.idata' import data readable writeable" 
+    db 0
+
+;val a_import_table
+  label _a_import_table
+  dq 0
+
+;[u8] val default_input_file_name "example\12_message_box.txt" 0
+  label _default_input_file_name 
+    db "example\12_message_box.txt", 0
+
 
