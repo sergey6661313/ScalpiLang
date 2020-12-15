@@ -15,6 +15,6 @@ fn func_3
 
 fn start
   -> func_3
-    -> func_1 (1, 4,),
-    -> func_2 (2, 5,),
+    (-> func_1 :1, 4,),
+    (-> func_2 :2, 5,),
   return 
