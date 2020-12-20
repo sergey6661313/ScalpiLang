@@ -5,14 +5,14 @@ fn str_len
   param start_str
   var   end_str    start_str'
 
-  # в цикле перебираем символы строки пока не дойдём до символа обозначаемого 0
+  |в цикле перебираем символы строки пока не дойдём до символа обозначаемого 0
   loop
     var symbol 0
 
-    end_str'[u8] => symbol              | получаем символ из строки 
-    if symbol'[u8] = 0                  | если ноль
-      then return end_str' - start_str' | тогда возвращяем длинну
-    end_str' + 8 => end_str	        | иначе инкрементируем длинну
+    end_str'[u8] => symbol              |получаем символ из строки 
+    if symbol'[u8] = 0                  |если ноль
+      then return end_str' - start_str' |тогда возвращяем длинну
+    end_str' + 8 => end_str	        |иначе инкрементируем длинну
 
 fn start
   return hw, -> str_len

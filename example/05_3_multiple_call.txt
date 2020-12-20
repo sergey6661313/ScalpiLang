@@ -1,21 +1,20 @@
 fn func_1
-  param l1
-  param l2
-  return l1' * l2'
+  param p1
+  param p2
+  return p1' * p2'
 
 fn func_2
-  param l1
-  param l2
-  return l1' * l2'
+  param p1
+  param p2
+  return p1' * p2'
 
 fn func_3
-  param l1
-  param l2
-  return l1' * l2'
+  param p1
+  param p2
+  return p1' * p2'
 
 fn start
-  -> func_3
-    1, 4, -> func_1,
-    2, 5, -> func_2,
-  
-  return 
+  1,   4,   -> func_1  => a1
+  2,   5,   -> func_2  => a2
+  a1', a2', -> func_3
+  return
