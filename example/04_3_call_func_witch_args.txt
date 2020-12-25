@@ -1,14 +1,12 @@
-﻿fn multiplecate
-  param first_arg
-  param second_arg
+﻿multiplecate
+  params
+    first_arg
+    second_arg
 
-  return first_arg' * second_arg'
+  code: first_arg' * second_arg'
 
-fn start 
-  -> multiplecate
-    6,
-    7,
 
-|в нутри выжарежний блоки имееют больший приоритет 
-|и поэтому компилятор вынесет их над блоком 
-|и получится как в примере 04_2
+-> multiplecate
+  6, 7,
+
+|в процессе компиляции станет как в примере 04_2, а затем как в 04_1

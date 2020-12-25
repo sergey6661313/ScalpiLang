@@ -1,11 +1,12 @@
-﻿fn multiplecate
-  param first_arg
-  param second_arg
+﻿multiplecate
+  params: 
+    first_arg
+    second_arg
+  
+  code: first_arg' * second_arg'
 
-  return first_arg' * second_arg'
-
-fn start
-  6, 7, -> multiplecate
-
+6, 
+7, 
+-> multiplecate   
 
 | , - запомнить аргумент

@@ -1,12 +1,13 @@
-﻿fn multiplecate
-  param first_arg
-  param second_arg
+﻿multiplecate
+  params 
+    first_arg
+    second_arg
 
-  return first_arg' * second_arg'
+  code: first_arg' * second_arg'
 
-fn start 
-  -> multiplecate :6, 7,
+
+-> multiplecate :6, 7,
 
 | двоеточие - аналог однострочного блока.
 | данная строка расшифруется компилятором в 2 строки
-| и станет как в примере "04_3", а затем как в примере "04_2"
+| и станет как в примере "04_3", а затем как в примере "04_2" и в конце как в "04_1"

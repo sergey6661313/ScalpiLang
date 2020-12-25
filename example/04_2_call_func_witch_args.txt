@@ -1,14 +1,11 @@
-﻿fn multiplecate
-  param first_arg
-  param second_arg
+﻿multiplecate
+  params
+    first_arg
+    second_arg
 
-  return first_arg' * second_arg'
+  code: first_arg' * second_arg'
 
-fn start 
-  6, 
-  7,
-  -> multiplecate
-  return
 
-|в отличии от си выражения никогда не завершаются. 
-|Например можно посчитать адресс и тут же вызвать его.
+6, 7, -> multiplecate
+
+|в процессе компиляции станет как в примере 04_1
