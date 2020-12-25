@@ -1,7 +1,5 @@
-﻿import msvcrt "msvcrt.dll"
-  fn printf "printf"
+﻿msvcrt
+  import "msvcrt.dll": printf "printf"
 
-val[u8] hw "hello world" 0
-
-fn start
-  hw -> msvcrt\printf'
+hw: "hello world" 0
+hw -> msvcrt\printf'
