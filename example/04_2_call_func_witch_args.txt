@@ -1,11 +1,6 @@
-﻿multiplecate
-  params
-    first_arg
-    second_arg
+﻿# примет 04_1 вкратце
 
-  code: first_arg' * second_arg'
-
-
-6, 7, -> multiplecate
-
-|в процессе компиляции станет как в примере 04_1
+6, 7, -> multiplecate => return
+def multiplecate:fn
+  param first_arg, second_arg,
+  first_arg' * second_arg'
