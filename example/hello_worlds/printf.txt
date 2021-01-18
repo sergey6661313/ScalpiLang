@@ -1,5 +1,2 @@
-﻿msvcrt
-  import "msvcrt.dll": printf "printf"
-
-hw: "hello world" 0
-hw -> msvcrt\printf'
+﻿def hw "hello world", 0
+hw ~> msvcrt\printf
