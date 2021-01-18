@@ -1,0 +1,3 @@
+﻿import msvcrt printf
+def hw "hello world" 0
+hw -> msvcrt\printf'
