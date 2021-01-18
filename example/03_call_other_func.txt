@@ -1,7 +1,0 @@
-﻿fn foo
-  return 0
-
-fn start
-  -> foo
-
-| -> - вызов функции
