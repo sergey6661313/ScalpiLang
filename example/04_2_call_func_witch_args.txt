@@ -1,6 +1,6 @@
-﻿# примет 04_1 вкратце
+﻿| просто пример 04_1 вкратце.
 
-6, 7, -> multiplecate => return
-def multiplecate:fn
-  param first_arg, second_arg,
+6, 7, -> multiplication => return
+multiplication'fn:
+  param: first_arg, second_arg,
   first_arg' * second_arg'

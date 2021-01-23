@@ -1,20 +1,20 @@
 ﻿7, -> get_factorial => return
 
-def get_factorial :fn
-  params max,
-  locals f, n,
+get_factorial'fn
+  params: max',
+  locals: f', n',
 
-  1 => f  
+  1 => f 
   0 => n
   loop 
-    cmp n' ?? max'
-      >  break
+    cmp: n' ?? max'
+      >: break
     n' + 1  => n
     f' * n' => f
     continue
 
   f' => return
 
-# loop     - блок "цикл" с неявным переходом из его конца в его же начало.
-# break    - выход из цикла
-# continue - комманда перехода на начало цикла. Здесь указана только для явности.
+|loop     - блок "цикл" с неявным переходом из его конца в его же начало.
+|break    - выход из цикла
+|continue - комманда перехода на начало цикла. Здесь указана только для явности.
