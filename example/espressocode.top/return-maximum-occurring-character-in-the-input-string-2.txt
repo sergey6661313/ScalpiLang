@@ -8,7 +8,7 @@ char'u8:
 str: "sample string", 0
 text_1: "Max occurring character is %c", 10, 13, 0
 
-getMaxOccuringChar :fn  
+getMaxOccuringChar'fn  
    param
      a_str'p, 
      a_char'p,
