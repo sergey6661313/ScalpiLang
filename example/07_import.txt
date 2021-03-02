@@ -1,6 +1,6 @@
 ﻿msvcrt'import: "msvcrt.dll", printf
 hw: "hello world", 0
-hw -> msvcrt\printf'
+hw ~> msvcrt\printf'
 
 |Ключевое слово import
 |Внутри блока import  подблоки помимо ";" также можно разделять запятой.
