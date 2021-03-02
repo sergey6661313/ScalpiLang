@@ -1,4 +1,4 @@
-﻿7, -> get_factorial => return
+﻿7, -> get_factorial -> return
 
 get_factorial'fn
   params: max',
@@ -13,7 +13,7 @@ get_factorial'fn
     f' * n' => f
     continue
 
-  f' => return
+  f' -> return
 
 |loop     - блок "цикл" с неявным переходом из его конца в его же начало.
 |break    - выход из цикла
