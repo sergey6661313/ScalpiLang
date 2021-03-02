@@ -5,8 +5,8 @@ max'fn
   params: a', b',
 
   if: a' - b'  >  0
-    then: a' => return
-    else: b' => return
+    then: a' -> return
+    else: b' -> return
 
 |Ключевое слово if подобно конструкции switch в Си где:
 |    then = 1
