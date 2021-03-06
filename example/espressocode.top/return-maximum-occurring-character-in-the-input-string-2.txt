@@ -1,50 +1,50 @@
-msvcrt'import: printf
+'script
+  text_1 'n1: "Max occurring character is %c", 10, 13, 0
+  str    'n1: "sample string", 0
 
-str, char, -> getMaxOccuringChar
-text_1, char'u8, -> msvcrt\printf'
-=> return
+  locals: char'8n
+  
+  str, char, -> getMaxOccuringChar
+  text_1, char', ~> msvcrt\printf'
+  => return
 
-char'u8:
-str: "sample string", 0
-text_1: "Max occurring character is %c", 10, 13, 0
+  
+  getMaxOccuringChar'fn  
+     param: a_str, a_char,
 
-getMaxOccuringChar'fn  
-   param
-     a_str'p, 
-     a_char'p,
-
-   local  
-     result'u8,
-     symbol'u8,
-     a_symbol,
-     a_offset_max,          |аддрес того элемента в массиве в котором будет самое большое количество
-     max,
-     count,
-     chars_count'u8*255,    |массив повторений символов
-  
-  |Обход строки и ведение количества каждого символа
-  loop 
-    a_str     '> a_symbol 
-    a_symbol' '> symbol
-    cmp symbol' ?? 0
-      = break
-  
-    chars_count + symbol'; ' + 1 => chars_count + symbol'
-    a_symbol' + 1 => a_symbol 
-  
-  |находим самый частый
-  ;; -1 => max
-  0     => count
-  loop
-    a_out_of_bounds chars_count + 254
-    a_symbol chars_count
-    a_symbol''[u8] => count
-    cmp count' ?? max'
-      > count' => max
-        a_symbol' => a_offset_max
-  
-    a_symbol' + 1 => a_symbol
-    cmp a_symbol' ?? a_out_of_bounds'
-      > break
+     local  
+       result,
+       symbol,
+       a_symbol,
+       a_offset_max,          |аддрес того элемента в массиве в котором будет самое большое количество
+       max,
+       count,
+       chars_count'n8*255,    |массив повторений символов
     
-  a_offset_max' - chars_count => a_char'
+    |Обход строки и ведение количества каждого символа
+    loop 
+      a_str' => a_symbol 
+      a_symbol''n1 => symbol
+      cmp symbol' ?? 0
+        =: break
+    
+      chars_count + symbol'; ' + 1 => chars_count + symbol'
+      a_symbol' + 1 => a_symbol 
+    
+    |находим самый частый
+    ;; -1 => max
+    0     => count
+    loop
+      a_out_of_bounds chars_count + 254
+      a_symbol chars_count
+      a_symbol''8n => count
+      cmp count' ?? max'
+        >
+          count' => max
+          a_symbol' => a_offset_max
+    
+      a_symbol' + 1 => a_symbol
+      cmp a_symbol' ?? a_out_of_bounds'
+        >: break
+      
+    a_offset_max' - chars_count => a_char'
