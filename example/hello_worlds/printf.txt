@@ -1,2 +1,3 @@
-﻿hw: "hello world", 0
-hw ~> msvcrt\printf
+'script
+  hw': "hello world", 0
+  hw, ~> msvcrt\printf
