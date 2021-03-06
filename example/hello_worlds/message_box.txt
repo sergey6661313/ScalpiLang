@@ -1,4 +1,0 @@
-'script
-  title:   "Alert!", 0
-  message: "hello world!", 0
-  0, title, message, 0, ~> User32\MessageBoxA'
