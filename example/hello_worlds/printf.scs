@@ -1,0 +1,2 @@
+﻿hw'n1: "hello world", 0
+hw, ~> msvcrt\printf'
