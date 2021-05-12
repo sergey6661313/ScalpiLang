@@ -1,3 +1,0 @@
-title'n1:   "Alert!", 0
-message'n1: "hello world!", 0
-0, title, message, 0, ~> User32\MessageBoxA'

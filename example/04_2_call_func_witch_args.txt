@@ -1,6 +1,0 @@
-﻿| просто пример 04_1 вкратце.
-
-multiplication'fn:
-  param: first_arg, second_arg,
-  first_arg' * second_arg'
-6, 7, -> multiplication
